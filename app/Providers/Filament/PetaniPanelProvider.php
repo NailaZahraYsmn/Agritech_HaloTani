@@ -33,7 +33,7 @@ class PetaniPanelProvider extends PanelProvider
             // ->brandLogo(null)
             ->darkMode(false)
             ->registration(RegisterPetani::class)
-            ->profile(EditProfile::class)
+            ->profile(EditProfile::class, isSimple: false)
             ->passwordReset()
             ->colors([
                 'primary' => '#2E7D32',

@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Keluhan;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestKeluhanTable extends BaseWidget
@@ -15,42 +16,65 @@ class LatestKeluhanTable extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(
-                // Urutkan berdasarkan kolom 'tanggal' (atau 'id_keluhan' jika 'tanggal' bukan datetime)
-                Keluhan::query()->latest('tanggal')->limit(5)
-            )
-            ->heading('Keluhan & Analisis Terbaru')
+            ->query(Keluhan::query()->latest('tanggal'))
             ->columns([
-                Tables\Columns\TextColumn::make('teks_keluhan')
+                // 1. Judul / Deskripsi (Bersihkan teks prefix)
+                TextColumn::make('teks_keluhan')
                     ->label('Judul / Deskripsi')
+                    ->formatStateUsing(function ($state) {
+                        // Ambil teks setelah "Keluhan:" kalau ada
+                        if (str_contains($state, 'Keluhan:')) {
+                            return str_replace("\n", ' ', explode('Keluhan:', $state)[1] ?? $state);
+                        }
+                        return $state;
+                    })
                     ->limit(40)
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('jenis_tanaman')
+                // 2. Tanaman (Parse dari string jika kolom DB null, atau panggil jenis_tanaman)
+                TextColumn::make('jenis_tanaman')
                     ->label('Tanaman')
-                    ->badge()
-                    ->color('success'),
+                    ->getStateUsing(function (Keluhan $record) {
+                        if ($record->jenis_tanaman) return $record->jenis_tanaman;
+                        
+                        // Fallback parse dari teks_keluhan jika data lama
+                        preg_match('/Jenis Tanaman:\s*([^\n]+)/i', $record->teks_keluhan, $matches);
+                        return $matches[1] ?? '-';
+                    })
+                    ->placeholder('-'),
 
-                Tables\Columns\TextColumn::make('urgensi')
+                // 3. Urgensi (Parse dari string jika kolom DB null)
+                TextColumn::make('tingkat_urgensi')
                     ->label('Urgensi')
+                    ->getStateUsing(function (Keluhan $record) {
+                        if ($record->tingkat_urgensi) return $record->tingkat_urgensi;
+
+                        preg_match('/Urgensi:\s*([^\n]+)/i', $record->teks_keluhan, $matches);
+                        return $matches[1] ?? '-';
+                    })
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'Tinggi' => 'danger',
-                        'Sedang' => 'warning',
-                        'Rendah' => 'info',
-                        default => 'gray',
+                    ->color(fn (string $state): string => match (strtolower($state)) {
+                        'tinggi' => 'danger',
+                        'sedang' => 'warning',
+                        'rendah' => 'info',
+                        default  => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('tanggal')
+                // 4. Tanggal
+                TextColumn::make('tanggal')
                     ->label('Tanggal')
-                    ->date('d M Y'),
+                    ->date('d M Y')
+                    ->sortable(),
 
-                Tables\Columns\TextColumn::make('status')
+                // 5. Status dengan Badge Berwarna
+                TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'Selesai' => 'success',
-                        'Proses' => 'warning',
-                        default => 'gray',
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                    ->color(fn (string $state): string => match (strtolower($state)) {
+                        'selesai' => 'success',
+                        'proses'   => 'warning',
+                        default   => 'gray',
                     }),
             ]);
     }

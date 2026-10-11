@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Pages\RiwayatAnalisis;
 use App\Models\Keluhan;
 use App\Services\KiraAIService;
 use BackedEnum;
@@ -15,55 +16,70 @@ class KirimKeluhan extends Page
     protected static ?string $navigationLabel = 'Kirim Keluhan';
     protected static ?string $title = 'Kirim Keluhan Tanaman';
     protected string $view = 'filament.pages.kirim-keluhan';
+
     public string $jenisTanaman = '';
     public string $lokasiLahan = '';
-    public string $urgensi = 'Sedang'; // Default urgensi
+    public string $urgensi = 'Sedang';
     public string $deskripsi = '';
 
-    public function kirim()
+    public function submit()
     {
+        // Validasi input sederhana agar tidak kosong
         $this->validate([
-            'jenisTanaman' => 'required|max:100',
-            'lokasiLahan'  => 'required|max:150',
-            'urgensi'      => 'required|in:Rendah,Sedang,Tinggi',
-            'deskripsi'    => 'required|min:10',
+            'jenisTanaman' => 'required',
+            'lokasiLahan'  => 'required',
+            'deskripsi'    => 'required',
         ]);
 
-        // 1. Format rincian inputan form untuk kolom `teks_keluhan`
-        $teksKeluhanLengkap = "Jenis Tanaman: {$this->jenisTanaman}\n" .
-                              "Lokasi: {$this->lokasiLahan}\n" .
-                              "Urgensi: {$this->urgensi}\n" .
-                              "Keluhan: {$this->deskripsi}";
+        try {
+            // 1. Format Teks Keluhan dengan Prefix yang Konsisten untuk Table Parser
+            $teksKeluhanLengkap = "Jenis Tanaman: {$this->jenisTanaman}\nLokasi: {$this->lokasiLahan}\nUrgensi: {$this->urgensi}\nKeluhan: {$this->deskripsi}";
 
-        // 2. Panggil AI Service V2
-        $hasilAi = KiraAIService::generateSolusi($this->deskripsi,
-            $this->lokasiLahan,$this->jenisTanaman
-        );
+            // 2. Panggil AI Service (Static Method)
+            $hasilAi = KiraAIService::generateSolusi(
+                $this->deskripsi,
+                $this->lokasiLahan
+            );
 
-        // 3. Simpan ke Database
-        Keluhan::create([
-            'id_keluhan'     => (string) Str::uuid(),
-            'id_petani'      => auth()->id() ?? '01a11165-ec48-7296-ab63-1d1a601c3cec',
-            'teks_keluhan'   => $teksKeluhanLengkap,
-            'hasil_analisis' => $hasilAi,
-            'tanggal'        => now(),
-            'status'         => 'selesai',
-        ]);
+            // 3. Simpan ke Database
+            $keluhan = Keluhan::create([
+                'id_keluhan'     => (string) Str::uuid(),
+                'id_petani'      => auth()->id() ?? '01a11165-ec48-7296-ab63-1d1a601c3cec',
+                'teks_keluhan'   => $teksKeluhanLengkap,
+                'tingkat_urgensi' => $this->urgensi,
+                'hasil_analisis' => $hasilAi,
+                'tanggal'        => now(),
+                'status'         => 'selesai',
+            ]);
 
-        Notification::make()
-            ->title('Analisis AI Berhasil')
-            ->body('Keluhan telah dianalisis dan disimpan ke riwayat.')
-            ->success()
-            ->send();
+            Notification::make()
+                ->title('Analisis AI Selesai!')
+                ->body('Hasil analisis keluhan Anda telah berhasil disimpan.')
+                ->success()
+                ->send();
 
-        $this->reset(['jenisTanaman', 'lokasiLahan', 'urgensi', 'deskripsi']);
+            $this->reset(['jenisTanaman', 'lokasiLahan', 'urgensi', 'deskripsi']);
 
-        // Redirect ke Riwayat Analisis
-        return redirect()->to('/petani/riwayat-analisis');
+            // Redirect Livewire 3
+            return $this->redirect(RiwayatAnalisis::getUrl());
+
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title('Gagal Menyimpan Laporan')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
     }
 
     public function batal(): void
     {
         $this->reset(['jenisTanaman', 'lokasiLahan', 'urgensi', 'deskripsi']);
     }
+
+    public function setUrgensi(string $level): void
+    {
+        $this->urgensi = $level;
+    }
+
 }

@@ -23,7 +23,7 @@ class KiraAIService
             "2. WAJIB gunakan format Markdown list (gunakan tanda '-' atau angka di baris baru) untuk setiap poin agar mudah dibaca.\n" .
             "3. Tulis jawaban secara ringkas, padat, dan langsung ke poin utama.";
 
-
+        // Daftar model free cadangan (urut dari yang paling stabil)
         $models = [
             'nvidia/nemotron-3-ultra-550b-a55b:free',
             'nvidia/nemotron-3.5-lightning:free',
@@ -32,7 +32,7 @@ class KiraAIService
 
         foreach ($models as $model) {
             try {
-                $response = Http::timeout(20) 
+                $response = Http::timeout(20) // Cukup 20 detik per model biar cepat pindah
                     ->withHeaders([
                         'Authorization' => 'Bearer ' . $apiKey,
                         'HTTP-Referer'  => 'http://localhost',
@@ -43,7 +43,7 @@ class KiraAIService
                         'messages' => [
                             ['role' => 'user', 'content' => $prompt]
                         ],
-                        'max_tokens' => 1000,
+                        'max_tokens' => 3000,
                         'temperature' => 0.7,
                     ]);
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use BackedEnum;
 use App\Models\Keluhan;
 use Filament\Actions\Action;
 use Filament\Pages\Page;
@@ -17,11 +18,24 @@ class RiwayatAnalisis extends Page implements HasTable
 
     protected string $view = 'filament.pages.riwayat-analisis';
 
+    protected static ?string $title = 'Riwayat & Hasil Analisis AI';
+    protected static ?string $navigationLabel = 'Riwayat Analisis';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clock';
+    
+    public string $filter='semua';
+    public ?string $selectedId = null;
+
+    public function setFilter(string $filter): void
+    {
+        $this->filter = $filter;
+    }
+    public function pilih(string $id): void
+    {
+        $this->selectedId = $id;
+    }
     public function table(Table $table): Table
     {
         return $table
-            // Ambil semua keluhan, terbaru di atas
-            // (nanti difilter per petani yang login)
             ->query(Keluhan::query())
             ->defaultSort('tanggal', 'desc')
             ->columns([

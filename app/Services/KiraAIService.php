@@ -9,10 +9,10 @@ class KiraAIService
 {
     public static function generateSolusi(string $keluhanPetani, string $lokasiLahan): string
     {
-        $apiKey = env('OPENROUTER_API_KEY') ?? config('services.openrouter.key');
+        $apiKey = env('CEREBRAS_API_KEY') ?? config('services.cerebras.key');
 
         if (empty($apiKey)) {
-            return 'ERROR: OPENROUTER_API_KEY belum terdeteksi!';
+            return 'ERROR: CEREBRAS_API_KEY belum terdeteksi!';
         }
 
         $prompt = "Kamu adalah asisten ahli pertanian 'Agritech Assistant'.\n" .
@@ -23,11 +23,8 @@ class KiraAIService
             "2. WAJIB gunakan format Markdown list (gunakan tanda '-' atau angka di baris baru) untuk setiap poin agar mudah dibaca.\n" .
             "3. Tulis jawaban secara ringkas, padat, dan langsung ke poin utama.";
 
-        // Daftar model free cadangan (urut dari yang paling stabil)
         $models = [
-            'nvidia/nemotron-3-ultra-550b-a55b:free',
-            'nvidia/nemotron-3.5-lightning:free',
-            'poolside/laguna-s-2.1:free',
+            'gpt-oss-120b'
         ];
 
         foreach ($models as $model) {
@@ -38,12 +35,12 @@ class KiraAIService
                         'HTTP-Referer'  => 'http://localhost',
                         'Content-Type'  => 'application/json',
                     ])
-                    ->post('https://openrouter.ai/api/v1/chat/completions', [
+                    ->post('https://api.cerebras.ai/v1/chat/completions', [
                         'model' => $model,
                         'messages' => [
                             ['role' => 'user', 'content' => $prompt]
                         ],
-                        'max_tokens' => 3000,
+                        'max_tokens' => 1000,
                         'temperature' => 0.7,
                     ]);
 

@@ -10,6 +10,7 @@ class KiraAIService
     public static function generateSolusi(string $keluhanPetani, string $lokasiLahan): string
     {
         $apiKey = env('OPENROUTER_API_KEY') ?? config('services.openrouter.key');
+        // $apiKey = env('OPENROUTER_API_KEY') ?? config('services.openrouter.key');
 
         if (empty($apiKey)) {
             return 'ERROR: OPENROUTER_API_KEY belum terdeteksi!';

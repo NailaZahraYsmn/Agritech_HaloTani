@@ -13,6 +13,7 @@ class RiwayatAnalisis extends Page
 
     protected static ?string $title = 'Riwayat & Hasil Analisis AI';
     protected static ?string $navigationLabel = 'Riwayat Analisis';
+    protected static ?int $navigationSort = 2;
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
     public string $filter = 'semua';

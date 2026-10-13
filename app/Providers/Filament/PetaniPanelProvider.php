@@ -33,7 +33,7 @@ class PetaniPanelProvider extends PanelProvider
             ->brandName('Agritech')
             ->brandLogo(fn () => view('filament.components.brand'))
             ->sidebarWidth('15rem')
-            ->userMenu(false)
+            // ->userMenu(false)
             ->darkMode(false)
             ->registration(RegisterPetani::class)
             ->profile(EditProfile::class, isSimple: false)
@@ -46,13 +46,13 @@ class PetaniPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
-            ->navigationItems([
-                NavigationItem::make('Profil Saya')
-                    ->icon('heroicon-o-user')
-                    ->sort(3)
-                    ->url(fn (): string => filament()->getProfileUrl())
-                    ->isActiveWhen(fn (): bool => request()->routeIs('filament.petani.auth.profile')),
-            ])
+            // ->navigationItems([
+            //     NavigationItem::make('Profil Saya')
+            //         ->icon('heroicon-o-user')
+            //         ->sort(3)
+            //         ->url(fn (): string => filament()->getProfileUrl())
+            //         ->isActiveWhen(fn (): bool => request()->routeIs('filament.petani.auth.profile')),
+            // ])
             ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('filament.components.sidebar-styles'))
             ->renderHook(PanelsRenderHook::SIDEBAR_FOOTER, fn () => view('filament.components.sidebar-footer'))
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')

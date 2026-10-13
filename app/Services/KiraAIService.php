@@ -23,7 +23,6 @@ class KiraAIService
             "2. WAJIB gunakan format Markdown list (gunakan tanda '-' atau angka di baris baru) untuk setiap poin agar mudah dibaca.\n" .
             "3. Tulis jawaban secara ringkas, padat, dan langsung ke poin utama.";
 
-        // Daftar model free cadangan (urut dari yang paling stabil)
         $models = [
             'gpt-oss-120b'
         ];

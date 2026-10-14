@@ -12,19 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('keluhan', function (Blueprint $table) {
-            $table->string('id_keluhan', 50)->primary();
-            $table->string('id_petani', 50);
-
-            $table->string('jenis_tanaman', 50);
-            $table->string('urgensi', 20)->nullable()->default('sedang');
-
+            $table->uuid('id_keluhan')->primary();
+            $table->uuid('id_petani');
             $table->text('teks_keluhan');
-            $table->date('tanggal');
-            $table->string('status', 20)->nullable()->default('pending');
-            
-
-            $table->foreign('id_petani')->references('id_petani')->on('petani')->cascadeOnUpdate()->cascadeOnDelete();
-
+            $table->string('tingkat_urgensi')->nullable();
+            $table->text('hasil_analisis')->nullable();
+            $table->dateTime('tanggal');                  
+            $table->string('status')->default('selesai');
+            $table->timestamps();
         });
     }
 

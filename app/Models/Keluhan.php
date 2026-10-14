@@ -31,7 +31,7 @@ class Keluhan extends Model
     protected function casts(): array
     {
         return [
-            'tanggal' => 'date',
+            'tanggal' => 'datetime',
         ];
     }
 

@@ -61,11 +61,19 @@
 
                     <!-- Hasil Analisis AI -->
                     <div style="padding: 1rem; border: 1px solid #bbf7d0; border-radius: 0.5rem; background-color: #f0fdf4;">
-                        <p style="font-weight: 600; font-size: 0.875rem; color: #15803d; margin-bottom: 0.5rem;">Hasil & Rekomendasi AI:</p>
-                        <div style="white-space: pre-line; color: #1f2937; font-size: 0.875rem; line-height: 1.6;">
-                            {!! nl2br(e($this->selectedKeluhan->hasil_analisis ?? 'Belum ada hasil analisis.')) !!}
-                        </div>
+                    <p style="font-weight: 600; font-size: 0.875rem; color: #15803d; margin-bottom: 0.75rem;">Hasil & Rekomendasi AI:</p>
+                    
+                    <style>
+                        .ai-content ul { list-style-type: disc !important; padding-left: 1.25rem !important; margin-top: 0.5rem !important; margin-bottom: 0.75rem !important; }
+                        .ai-content li { margin-bottom: 0.5rem !important; }
+                        .ai-content p { margin-bottom: 0.75rem !important; }
+                        .ai-content strong { color: #111827; }
+                    </style>
+
+                    <div class="ai-content" style="color: #1f2937; font-size: 0.875rem; line-height: 1.6;">
+                        {!! \Illuminate\Support\Str::markdown($this->selectedKeluhan->hasil_analisis ?? 'Belum ada hasil analisis.') !!}
                     </div>
+                </div>
 
                 </div>
             @else

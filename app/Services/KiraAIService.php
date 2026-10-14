@@ -24,12 +24,13 @@ class KiraAIService
             "3. Tulis jawaban secara ringkas, padat, dan langsung ke poin utama.";
 
         $models = [
-            'gpt-oss-120b'
+            'gpt-oss-120b',
+            'qwen-3.8-27b'
         ];
 
         foreach ($models as $model) {
             try {
-                $response = Http::timeout(20) // Cukup 20 detik per model biar cepat pindah
+                $response = Http::timeout(20)
                     ->withHeaders([
                         'Authorization' => 'Bearer ' . $apiKey,
                         'HTTP-Referer'  => 'http://localhost',

@@ -7,8 +7,6 @@ use Filament\Pages\Page;
 
 class PapanPengumuman extends Page
 {
-    // Icon menu sidebar
-    // protected static ?string $navigationIcon = 'heroicon-o-megaphone';
 
     // Tampilan Blade
     protected string $view = 'filament.pages.papan-pengumuman';

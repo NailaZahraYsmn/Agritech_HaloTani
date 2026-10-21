@@ -25,16 +25,15 @@
             {{-- Perulangan untuk mengambil data dari Model --}}
             @foreach($daftarPengumuman as $item)
                 
-                        {{-- 5. Kondisional IF untuk membedakan desain --}}
                 @if($item->is_penting)
-                    {{-- Penting (Warna Merah) --}}
+                    {{-- Penting --}}
                     <div class="p-4 rounded-xl border border-red-500 bg-red-50 shadow-sm">
                         <h3 class="text-lg font-bold text-red-700"> PENTING!--> {{ $item->judul }}</h3>
                         <p class="mt-2 text-red-900">{{ $item->isi }}</p>
                         <span class="text-xs text-red-500 mt-3 block">{{ $item->created_at->format('d M Y') }}</span>
                     </div>
                 @else
-                    {{-- Biasa (Warna Putih) --}}
+                    {{-- Biasa --}}
                     <div class="p-4 rounded-xl border border-gray-300 bg-white shadow-sm">
                         <h3 class="text-lg font-bold text-gray-800">Ada notifikasi buat kamu --> {{ $item->judul }}</h3>
                         <p class="mt-2 text-gray-600">{{ $item->isi }}</p>
